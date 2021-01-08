@@ -10,7 +10,10 @@ const client = new tmi.client({
         username: ENV.BOT_USERNAME,
         password: ENV.OAUTH_TOKEN
     },
-    channels: [ENV.CHANNEL_NAME]
+    channels: [ENV.CHANNEL_NAME],
+    connection: {
+        reconnect: true
+    }
 });
 
 const msgQueue = new MessageQueue(client, {
@@ -32,8 +35,12 @@ client.on("message", messageLogger);
 client.on("message", ExclCommands(msgQueue));
 client.on("message", AHOJSender(msgQueue));
 
+client.on("disconnected", (reason) => {
+    log(`Disconnected. Reason: ${reason}`);
+});
+
 client.connect().then(async () => {
-    log("Bot connected.");
+    log("Connected.");
     await client.color("HotPink");
     msgQueue.push("AHOJ");
 });
