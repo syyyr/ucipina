@@ -32,7 +32,8 @@ client.on("message", messageLogger);
 client.on("message", ExclCommands(msgQueue));
 client.on("message", AHOJSender(msgQueue));
 
-client.connect().then(() => {
+client.connect().then(async () => {
     log("Bot connected.");
+    await client.color("HotPink");
     msgQueue.push("AHOJ");
 });
