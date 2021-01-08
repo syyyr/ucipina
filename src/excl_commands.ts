@@ -4,6 +4,9 @@ import MessageQueue from "./msg_queue";
 import log from "./log"
 
 const exclCommandHandlers: {[key in string]: (msgQueue: MessageQueue) => void} = {
+    "!commands": (msgQueue: MessageQueue) => {
+        msgQueue.push(`Příkazy: ${Object.keys(exclCommandHandlers).sort().join(" ")}`);
+    },
     "!bot": (msgQueue: MessageQueue) => {
         msgQueue.push(`AHOJ! Já jsem ${ENV.BOT_USERNAME} a jsem bot na tomto kanálu. :^)`);
     }
