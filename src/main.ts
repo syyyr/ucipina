@@ -12,7 +12,8 @@ const client = new tmi.client({
     },
     channels: [ENV.CHANNEL_NAME],
     connection: {
-        reconnect: true
+        reconnect: true,
+        secure: true
     }
 });
 
