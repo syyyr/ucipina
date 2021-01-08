@@ -1,5 +1,4 @@
 import tmi from "tmi.js"
-
 import ENV from "./env"
 import MessageQueue from "./msg_queue"
 
@@ -57,7 +56,6 @@ const exclCommand = (_channel: string, userstate: tmi.ChatUserstate, message: st
 
 const AHOJcooldown = 30000;
 let AHOJlast = Date.now() - AHOJcooldown;
-
 const AHOJSender = (_channel: string, _userstate: tmi.ChatUserstate, message: string, self: boolean) => {
     if (self) {
         return;
@@ -77,5 +75,5 @@ client.on("message", AHOJSender);
 
 client.connect().then(() => {
     log("Bot connected.");
-    msgQueue.push("Hi!");
+    msgQueue.push("AHOJ");
 });
