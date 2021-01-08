@@ -46,6 +46,6 @@ client.connect().then(async () => {
     await client.color("HotPink");
     msgQueue.push("AHOJ");
     presence(msgQueue, {
-        interval: 300000
+        interval: 600000
     });
 });
