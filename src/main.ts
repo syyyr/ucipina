@@ -3,6 +3,7 @@ import ENV from "./env"
 import AHOJSender from "./AHOJ_sender"
 import ExclCommands from "./excl_commands"
 import MessageQueue from "./msg_queue"
+import presence from "./presence"
 import log from "./log"
 
 const client = new tmi.client({
@@ -44,4 +45,7 @@ client.connect().then(async () => {
     log("Connected.");
     await client.color("HotPink");
     msgQueue.push("AHOJ");
+    presence(msgQueue, {
+        interval: 300000
+    });
 });
