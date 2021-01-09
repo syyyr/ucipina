@@ -46,7 +46,7 @@ client.on("disconnected", (reason) => {
 client.connect().then(async () => {
     log("Connected.");
     await client.color("HotPink");
-    msgQueue.push("AHOJ");
+    msgQueue.push("AHOJ, jsem online.");
     presence(msgQueue, {
         interval: 600000
     });
