@@ -2,6 +2,7 @@ import tmi from "tmi.js"
 import ENV from "./env"
 import AHOJSender from "./AHOJ_sender"
 import ExclCommands from "./excl_commands"
+import YoutubeScraper from "./youtube"
 import MessageQueue from "./msg_queue"
 import presence from "./presence"
 import log from "./log"
@@ -36,6 +37,7 @@ const messageLogger = (_channel: string, userstate: tmi.ChatUserstate, message: 
 client.on("message", messageLogger);
 client.on("message", ExclCommands(msgQueue));
 client.on("message", AHOJSender(msgQueue));
+client.on("message", YoutubeScraper(msgQueue));
 
 client.on("disconnected", (reason) => {
     log(`Disconnected. Reason: ${reason}`);
