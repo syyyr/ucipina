@@ -5,7 +5,7 @@ import ExclCommands from "./excl_commands"
 import YoutubeScraper from "./youtube"
 import MessageQueue from "./msg_queue"
 import presence from "./presence"
-import log from "./log"
+import {log} from "./log"
 
 const client = new tmi.client({
     identity: {

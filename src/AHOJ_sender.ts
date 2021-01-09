@@ -1,6 +1,6 @@
 import tmi from "tmi.js"
 import MessageQueue from "./msg_queue";
-import log from "./log"
+import {log} from "./log"
 import wrapHandler from "./wrap_handler";
 
 const AHOJcooldown = 30000;

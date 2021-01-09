@@ -1,5 +1,5 @@
 import MessageQueue from "./msg_queue";
-import log from "./log"
+import {log} from "./log"
 
 const stash = [
     "(* ^ ω ^)",

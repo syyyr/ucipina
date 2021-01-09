@@ -1,7 +1,7 @@
 import tmi from "tmi.js"
 import ENV from "./env"
 import MessageQueue from "./msg_queue";
-import log from "./log"
+import {log} from "./log"
 import wrapHandler from "./wrap_handler";
 
 const exclCommandHandlers: {[key in string]: (msgQueue: MessageQueue) => void} = {

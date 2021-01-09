@@ -1,7 +1,7 @@
 import tmi from "tmi.js"
 import youtubedl from "youtube-dl"
 import MessageQueue, {Color} from "./msg_queue";
-import log from "./log"
+import {debug, log} from "./log"
 import wrapHandler from "./wrap_handler";
 
 type YTInfo = {
@@ -21,7 +21,7 @@ class Youtube {
             youtubedl.getInfo(url, [], (err, info: any) => {
                 if (err) {
                     if (process.env.UCIPINA_DEBUG === "1") {
-                        log(err);
+                        debug(err);
                     }
                     reject(url);
                     return;
