@@ -2,6 +2,7 @@ import tmi from "tmi.js"
 import youtubedl from "youtube-dl"
 import MessageQueue from "./msg_queue";
 import log from "./log"
+import wrapHandler from "./wrap_handler";
 
 type YTInfo = {
     duration: {
@@ -51,7 +52,7 @@ class Youtube {
 
 const yt = new Youtube();
 
-const youtubeInfoScraper = (msgQueue: MessageQueue, _channel: string, _userstate: tmi.ChatUserstate, message: string, _self: boolean) => {
+const youtubeInfoScraper = (msgQueue: MessageQueue, _channel: string, _userstate: tmi.ChatUserstate, message: string) => {
     const handleScrapeError = (url: string) => {
         msgQueue.push(`${_userstate.username}: ${url} is not a valid YT url. qwq`);
         return undefined;
@@ -68,12 +69,4 @@ const youtubeInfoScraper = (msgQueue: MessageQueue, _channel: string, _userstate
     });
 }
 
-export default (msgQueue: MessageQueue) => {
-    return (channel: string, userstate: tmi.ChatUserstate, message: string, self: boolean) => {
-        // FIXME: this if statement should be standardized somewhere
-        if (self) {
-            return;
-        }
-        youtubeInfoScraper(msgQueue, channel, userstate, message, self);
-    }
-};
+export default wrapHandler(youtubeInfoScraper);

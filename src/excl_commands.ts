@@ -2,6 +2,7 @@ import tmi from "tmi.js"
 import ENV from "./env"
 import MessageQueue from "./msg_queue";
 import log from "./log"
+import wrapHandler from "./wrap_handler";
 
 const exclCommandHandlers: {[key in string]: (msgQueue: MessageQueue) => void} = {
     "!commands": (msgQueue: MessageQueue) => {
@@ -12,10 +13,7 @@ const exclCommandHandlers: {[key in string]: (msgQueue: MessageQueue) => void} =
     }
 }
 
-const exclCommand = (msgQueue: MessageQueue, _channel: string, userstate: tmi.ChatUserstate, message: string, self: boolean) => {
-    if (self) {
-        return;
-    }
+const exclCommand = (msgQueue: MessageQueue, _channel: string, userstate: tmi.ChatUserstate, message: string) => {
     if (message.charAt(0) === "!") {
         if (typeof userstate.username === "undefined") {
             log("Got a !command from a non-user.");
@@ -31,8 +29,4 @@ const exclCommand = (msgQueue: MessageQueue, _channel: string, userstate: tmi.Ch
     }
 };
 
-export default (msgQueue: MessageQueue) => {
-    return (_channel: string, userstate: tmi.ChatUserstate, message: string, self: boolean) => {
-        exclCommand(msgQueue, _channel, userstate, message, self);
-    }
-};
+export default wrapHandler(exclCommand);
