@@ -52,12 +52,16 @@ class Youtube {
 
 const yt = new Youtube();
 
-const youtubeInfoScraper = (msgQueue: MessageQueue, _channel: string, _userstate: tmi.ChatUserstate, message: string) => {
+const youtubeInfoScraper = (msgQueue: MessageQueue, _channel: string, userstate: tmi.ChatUserstate, message: string) => {
     const handleScrapeError = (url: string) => {
-        msgQueue.push(`${_userstate.username}: ${url} is not a valid YT url. qwq`);
+        msgQueue.push(`${userstate.username}: ${url} is not a valid YT url. qwq`);
         return undefined;
     };
-    Promise.all(yt.parseUrls(message).map(yt.getInfo).map((prom) => prom.catch(handleScrapeError))).then((infos: (YTInfo | undefined)[]) => {
+    const urls = yt.parseUrls(message);
+    if (urls.length > 0) {
+        log(`Parsed ${urls.length} URLs from ${userstate.username}.`);
+    }
+    Promise.all(urls.map(yt.getInfo).map((prom) => prom.catch(handleScrapeError))).then((infos: (YTInfo | undefined)[]) => {
         infos.forEach((info: YTInfo | undefined) => {
             if (typeof info === "undefined") {
                 return;
