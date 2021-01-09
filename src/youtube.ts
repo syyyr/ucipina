@@ -64,7 +64,7 @@ const youtubeInfoScraper = (msgQueue: MessageQueue, _channel: string, _userstate
             }
             const duration =
                 `${info.duration.hours ? info.duration.hours + "h " : ""}${info.duration.minutes ? info.duration.minutes + "m " : ""}${info.duration.seconds + "s"}`;
-            msgQueue.push(`YouTube, Title: ${info.title} Uploader: ${info.uploader} Duration: ${duration} https://youtu.be/${info.id}`, Color.Red);
+            msgQueue.push(`/me YouTube, Title: ${info.title} Uploader: ${info.uploader} Duration: ${duration} https://youtu.be/${info.id}`, Color.Red);
         });
     });
 }
