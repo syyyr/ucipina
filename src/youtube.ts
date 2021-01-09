@@ -18,7 +18,11 @@ type YTInfo = {
 class Youtube {
     getInfo(url: string): Promise<YTInfo> {
         return new Promise((resolve, reject) => {
-            youtubedl.getInfo(url, [], (err, info: any) => {
+            const options = [];
+            if (process.env.UCIPINA_YT_IPV4 === "1") {
+                options.push("--force-ipv4");
+            }
+            youtubedl.getInfo(url, options, (err, info: any) => {
                 if (err) {
                     if (process.env.UCIPINA_DEBUG === "1") {
                         debug(err);
