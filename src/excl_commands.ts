@@ -10,6 +10,9 @@ const exclCommandHandlers: {[key in string]: (msgQueue: MessageQueue) => void} =
     },
     "!bot": (msgQueue: MessageQueue) => {
         msgQueue.push(`AHOJ! Já jsem ${ENV.BOT_USERNAME} a jsem bot na tomto kanálu. :^)`);
+    },
+    "!youtube": (msgQueue: MessageQueue) => {
+        msgQueue.push("Bot podporuje YouTube linky. Stačí je poslat do chatu (klidně i víc najednou.");
     }
 }
 
