@@ -19,6 +19,6 @@ const stash = [
 export default (msgQueue: MessageQueue, options: {interval: number}) => {
     global.setInterval(() => {
         log("Sending presence.");
-        msgQueue.push(stash[Math.floor((stash.length * Math.random()))]);
+        msgQueue.push(`/me ${stash[Math.floor((stash.length * Math.random()))]}`);
     }, options.interval);
 };
