@@ -1,6 +1,6 @@
 import tmi from "tmi.js"
 import youtubedl from "youtube-dl"
-import MessageQueue from "./msg_queue";
+import MessageQueue, {Color} from "./msg_queue";
 import log from "./log"
 import wrapHandler from "./wrap_handler";
 
@@ -64,7 +64,7 @@ const youtubeInfoScraper = (msgQueue: MessageQueue, _channel: string, _userstate
             }
             const duration =
                 `${info.duration.hours ? info.duration.hours + "h " : ""}${info.duration.minutes ? info.duration.minutes + "m " : ""}${info.duration.seconds + "s"}`;
-            msgQueue.push(`YouTube, Title: ${info.title} Uploader: ${info.uploader} Duration: ${duration} https://youtu.be/${info.id}`);
+            msgQueue.push(`YouTube, Title: ${info.title} Uploader: ${info.uploader} Duration: ${duration} https://youtu.be/${info.id}`, Color.Red);
         });
     });
 }
