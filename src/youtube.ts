@@ -20,6 +20,9 @@ class Youtube {
         return new Promise((resolve, reject) => {
             youtubedl.getInfo(url, [], (err, info: any) => {
                 if (err) {
+                    if (process.env.UCIPINA_DEBUG === "1") {
+                        log(err);
+                    }
                     reject(url);
                     return;
                 }
