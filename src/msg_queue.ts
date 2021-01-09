@@ -1,23 +1,51 @@
 import tmi from "tmi.js"
 import ENV from "./env"
 class MessageQueue {
-    private queue: string[];
+    private queue: {
+        message: string;
+        color?: Color
+    }[];
 
     constructor(client: tmi.Client, options: {interval: number}) {
         this.queue = [];
         global.setInterval(() => {
             const toSend = this.queue.shift();
-            if (typeof toSend === "string") {
-                client.say(ENV.CHANNEL_NAME, toSend).catch((reason) => {
+            if (typeof toSend === "object") {
+                if (typeof toSend.color !== "undefined") {
+                    client.color(toSend.color);
+                }
+                client.say(ENV.CHANNEL_NAME, toSend.message).catch((reason) => {
                     console.log("Unable to send message:", reason);
                 });
+                if (typeof toSend.color !== "undefined") {
+                    client.color(Color.HotPink);
+                }
             }
         }, options.interval);
     }
 
-    push(message: string): void {
-        this.queue.push(message);
+    push(message: string, color?: Color): void {
+        this.queue.push({message, color});
     }
 }
 
+enum Color {
+    Blue = "Blue",
+    BlueViolet = "BlueViolet",
+    CadetBlue = "CadetBlue",
+    Chocolate = "Chocolate",
+    Coral = "Coral",
+    DodgerBlue = "DodgerBlue",
+    Firebrick = "Firebrick",
+    GoldenRod = "GoldenRod",
+    Green = "Green",
+    HotPink = "HotPink",
+    OrangeRed = "OrangeRed",
+    Red = "Red",
+    SeaGreen = "SeaGreen",
+    SpringGreen = "SpringGreen",
+    YellowGreen = "YellowGreen",
+};
+
+export {Color};
 export default MessageQueue;
