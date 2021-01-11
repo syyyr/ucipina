@@ -16,9 +16,18 @@ const stash = [
     "(.❛ ᴗ ❛.)",
 ];
 
-export default (msgQueue: MessageQueue, options: {interval: number}) => {
-    global.setInterval(() => {
+export default (msgQueue: MessageQueue, options: {intervalFrom: number, intervalTo: number}) => {
+    const calcNext = () => {
+        const res = options.intervalFrom + Math.floor(Math.random() * (options.intervalTo - options.intervalFrom));
+        log(`New presence will be sent in ${Math.floor(res / 1000)} seconds.`);
+        return res;
+    };
+
+    const post = () => {
         log("Sending presence.");
         msgQueue.push(`/me ${stash[Math.floor((stash.length * Math.random()))]}`);
-    }, options.interval);
+        global.setTimeout(post, calcNext());
+    };
+
+    global.setTimeout(post, calcNext());
 };
