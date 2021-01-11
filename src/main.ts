@@ -51,3 +51,11 @@ client.connect().then(async () => {
         interval: 600000
     });
 });
+
+process.on("SIGTERM", async () => {
+    log("Got SIGTERM, exitting...");
+
+    await client.say(ENV.CHANNEL_NAME, "Odpojuji se.");
+    await client.disconnect();
+    process.exit();
+});
