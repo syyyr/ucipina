@@ -64,11 +64,6 @@ const main = async () => {
     );
 
     const api = new ApiClient({ authProvider: auth });
-    const user = await api.helix.users.getUserByName(ENV.CHANNEL_NAME);
-    if (user === null) {
-        console.log("Couldn't fetch user id.");
-        return;
-    }
 
     client.on("message", messageLogger);
     client.on("message", ExclCommands(msgQueue, api));

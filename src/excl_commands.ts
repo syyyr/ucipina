@@ -11,9 +11,9 @@ const secondsInDay = 3600 * 24;
 const secondsInHour = 3600;
 const secondsInMinute = 60;
 
-const exclCommandHandlers: {[key in string]: (msgQueue: MessageQueue) => void} = {
-    "!commands": (msgQueue: MessageQueue) => {
-        msgQueue.push(`Příkazy: ${Object.keys(exclCommandHandlers).sort().join(" ")}`);
+const commandHandlers = {
+    "!commands": (msgQueue: MessageQueue, ) => {
+        msgQueue.push(`Příkazy: ${Object.keys(commandHandlers).sort().join(" ")}`);
     },
     "!bot": (msgQueue: MessageQueue) => {
         msgQueue.push(`AHOJ! Já jsem ${ENV.BOT_USERNAME} a jsem bot na kanálu ${ENV.CHANNEL_NAME}. :^)`);
@@ -32,24 +32,61 @@ const exclCommandHandlers: {[key in string]: (msgQueue: MessageQueue) => void} =
 
         msgQueue.push(`Už běžím ${days}d${hours}h${minutes}m${upTimeSec}s.`);
     },
-    "!title": (msgQueue: MessageQueue) => {
+    "!title": (msgQueue: MessageQueue, args: string[], api: ApiClient) => {
+        const title = args.join(" ");
+        log(`Changing title to ${title}.`);
+        msgQueue.push(`Měním titulek na "${title}".`);
+        api.helix.users.getUserByName(ENV.CHANNEL_NAME).then((user) => {
+            if (user === null) {
+                log("Couldn't change the title. (user === null)")
+                return;
+            }
 
-    }
-}
+            api.helix.channels.updateChannelInfo(user, { title }).then(() => {
+                log("Title changed.");
+            }).catch((reason) => {
+                log("Couldn't change the title:");
+                log(reason);
+            });
+        });
+    },
+} as const;
 
-const exclCommand = (msgQueue: MessageQueue, _channel: string, userstate: tmi.ChatUserstate, _api: ApiClient, message: string) => {
+const modRequired: {[key in keyof typeof commandHandlers]: boolean} = {
+    "!bot": false,
+    "!title": true,
+    "!youtube": false,
+    "!commands": false,
+    "!bot-uptime": false
+};
+
+const isValidCommand = (command: string): command is keyof typeof commandHandlers => {
+    return command in commandHandlers;
+};
+
+const exclCommand = (msgQueue: MessageQueue, _channel: string, userstate: tmi.ChatUserstate, api: ApiClient, message: string) => {
     if (message.charAt(0) === "!") {
+        // Twitch handles double spaces, but let's be sure.
+        const [command, ...args] = message.replace("  ", " ").split(" ");
+
         if (typeof userstate.username === "undefined") {
             log("Got a !command from a non-user.");
             return;
         }
-        if (typeof exclCommandHandlers[message] === "function") {
-            log(`Executing "${message}".`);
-            exclCommandHandlers[message](msgQueue);
-        } else {
-            log(`Got unknown command "${message}".`);
-            msgQueue.push(`${userstate.username}: Sorry, ${message} ještě neumim. :<`);
+
+        if (!isValidCommand(command)) {
+            log(`Got unknown command "${command}".`);
+            msgQueue.push(`${userstate.username}: Sorry, ${command} ještě neumim. :<`);
+            return;
         }
+
+        if (modRequired[command] && !(userstate.mod === true || userstate.badges?.broadcaster === "1")) {
+            log(`Denied execution of "${command}" for "${userstate.username}".`);
+            return;
+        }
+
+        log(`Executing "${command}".`);
+        commandHandlers[command](msgQueue, args, api);
     }
 };
 
