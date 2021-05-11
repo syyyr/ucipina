@@ -53,10 +53,13 @@ client.connect().then(async () => {
     });
 });
 
-process.on("SIGTERM", async () => {
-    log("Got SIGTERM, exitting...");
+const signalHandler = async (sig: NodeJS.Signals) => {
+    log(`Got ${sig}, exiting...`);
 
     await client.say(ENV.CHANNEL_NAME, "Odpojuji se.");
     await client.disconnect();
     process.exit();
-});
+};
+
+process.on("SIGTERM", signalHandler);
+process.on("SIGINT", signalHandler);
