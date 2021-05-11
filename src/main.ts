@@ -1,4 +1,7 @@
 import tmi from "tmi.js"
+import { promises as fs } from "fs";
+import { ApiClient } from 'twitch';
+import { RefreshableAuthProvider, StaticAuthProvider } from 'twitch-auth';
 import ENV from "./env"
 import AHOJSender from "./AHOJ_sender"
 import ExclCommands from "./excl_commands"
@@ -34,25 +37,6 @@ const messageLogger = (_channel: string, userstate: tmi.ChatUserstate, message: 
     console.log(`${time} ${origin.padStart(15)}: ${message}`);
 };
 
-client.on("message", messageLogger);
-client.on("message", ExclCommands(msgQueue));
-client.on("message", AHOJSender(msgQueue));
-client.on("message", YoutubeScraper(msgQueue));
-
-client.on("disconnected", (reason) => {
-    log(`Disconnected. Reason: ${reason}`);
-});
-
-client.connect().then(async () => {
-    log("Connected.");
-    await client.color("HotPink");
-    msgQueue.push("AHOJ, jsem online.");
-    presence(msgQueue, {
-        intervalFrom: 900000,
-        intervalTo: 1200000
-    });
-});
-
 const signalHandler = async (sig: NodeJS.Signals) => {
     log(`Got ${sig}, exiting...`);
 
@@ -61,5 +45,52 @@ const signalHandler = async (sig: NodeJS.Signals) => {
     process.exit();
 };
 
-process.on("SIGTERM", signalHandler);
-process.on("SIGINT", signalHandler);
+const main = async () => {
+    const tokenData = JSON.parse(await fs.readFile("./tokens.json", "utf-8"));
+    const auth = new RefreshableAuthProvider(
+        new StaticAuthProvider(ENV.CLIENT_ID, tokenData.accessToken, ["user:edit:broadcast"]), {
+            clientSecret: ENV.CLIENT_SECRET,
+            refreshToken: tokenData.refreshToken,
+            expiry: tokenData.expiryTimestamp === null ? null : new Date(tokenData.expiryTimestamp),
+            onRefresh: async ({ accessToken, refreshToken, expiryDate }) => {
+                const newTokenData = {
+                    accessToken,
+                    refreshToken,
+                    expiryTimestamp: expiryDate === null ? null : expiryDate.getTime()
+                };
+                await fs.writeFile('./tokens.json', JSON.stringify(newTokenData, null, 4), "utf-8")
+            }
+        }
+    );
+
+    const api = new ApiClient({ authProvider: auth });
+    const user = await api.helix.users.getUserByName(ENV.CHANNEL_NAME);
+    if (user === null) {
+        console.log("Couldn't fetch user id.");
+        return;
+    }
+
+    client.on("message", messageLogger);
+    client.on("message", ExclCommands(msgQueue, api));
+    client.on("message", AHOJSender(msgQueue, api));
+    client.on("message", YoutubeScraper(msgQueue, api));
+
+    client.on("disconnected", (reason) => {
+        log(`Disconnected. Reason: ${reason}`);
+    });
+
+    client.connect().then(async () => {
+        log("Connected.");
+        await client.color("HotPink");
+        msgQueue.push("AHOJ, jsem online.");
+        presence(msgQueue, {
+            intervalFrom: 900000,
+            intervalTo: 1200000
+        });
+    });
+
+    process.on("SIGTERM", signalHandler);
+    process.on("SIGINT", signalHandler);
+};
+
+main();

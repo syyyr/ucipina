@@ -1,4 +1,5 @@
 import tmi from "tmi.js"
+import {ApiClient} from "twitch";
 import youtubedl from "youtube-dl"
 import MessageQueue, {Color} from "./msg_queue";
 import {debug, log} from "./log"
@@ -59,7 +60,7 @@ class Youtube {
 
 const yt = new Youtube();
 
-const youtubeInfoScraper = (msgQueue: MessageQueue, _channel: string, userstate: tmi.ChatUserstate, message: string) => {
+const youtubeInfoScraper = (msgQueue: MessageQueue, _channel: string, userstate: tmi.ChatUserstate, _api: ApiClient, message: string) => {
     const handleScrapeError = (url: string) => {
         msgQueue.push(`${userstate.username}: ${url} is not a valid YT url. qwq`);
         return undefined;

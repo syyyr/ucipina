@@ -1,4 +1,5 @@
 import tmi from "tmi.js"
+import { ApiClient } from 'twitch';
 import ENV from "./env"
 import MessageQueue from "./msg_queue";
 import {log} from "./log"
@@ -30,10 +31,13 @@ const exclCommandHandlers: {[key in string]: (msgQueue: MessageQueue) => void} =
         upTimeSec = upTimeSec - (minutes * secondsInMinute);
 
         msgQueue.push(`Už běžím ${days}d${hours}h${minutes}m${upTimeSec}s.`);
+    },
+    "!title": (msgQueue: MessageQueue) => {
+
     }
 }
 
-const exclCommand = (msgQueue: MessageQueue, _channel: string, userstate: tmi.ChatUserstate, message: string) => {
+const exclCommand = (msgQueue: MessageQueue, _channel: string, userstate: tmi.ChatUserstate, _api: ApiClient, message: string) => {
     if (message.charAt(0) === "!") {
         if (typeof userstate.username === "undefined") {
             log("Got a !command from a non-user.");
