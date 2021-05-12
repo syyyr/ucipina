@@ -39,6 +39,11 @@ const commandHandlers = {
         msgQueue.push(`Už běžím ${days}d${hours}h${minutes}m${upTimeSec}s.`);
     },
     "!title": (msgQueue: MessageQueue, handlerArgs: HandlerArgs) => {
+        if (handlerArgs.cmdArgs.length === 0) {
+            msgQueue.push(`@${handlerArgs.who} Na co to chceš změnit? (použití: !title <titulek>).`);
+            return;
+        }
+
         const title = handlerArgs.cmdArgs.join(" ");
         log(`Changing title to ${title}.`);
         handlerArgs.api.helix.users.getUserByName(ENV.CHANNEL_NAME).then((user) => {
