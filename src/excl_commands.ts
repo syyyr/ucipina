@@ -66,14 +66,52 @@ const commandHandlers = {
             log(reason);
         });
     },
+    "!game": (msgQueue: MessageQueue, handlerArgs: HandlerArgs) => {
+        if (handlerArgs.cmdArgs.length === 0) {
+            msgQueue.push(`Na co to chceš změnit? (použití: !game <název-hry>).`, {
+                whom: handlerArgs.who
+            });
+            return;
+        }
+
+        const gameQuery = handlerArgs.cmdArgs.join(" ");
+        handlerArgs.api.helix.games.getGameByName(gameQuery).then((game) => {
+            if (game === null) {
+                msgQueue.push("Tuhle hru neznám. :<", {
+                    whom: handlerArgs.who
+                });
+                return;
+            }
+
+            handlerArgs.api.helix.users.getUserByName(ENV.CHANNEL_NAME).then((user) => {
+                if (user === null) {
+                    log("Couldn't change the game. (user === null)")
+                    return;
+                }
+
+                handlerArgs.api.helix.channels.updateChannelInfo(user, { gameId: game.id }).then(() => {
+                    log("Game changed.");
+                    msgQueue.push(`@${handlerArgs.who} Hotovo.`);
+                }).catch((reason) => {
+                    log("Couldn't change the game.");
+                    log(reason);
+                });
+            }).catch((reason) => {
+                log("Couldn't get the stream user.");
+                log(reason);
+            });
+
+        });
+    }
 } as const;
 
 const modRequired: {[key in keyof typeof commandHandlers]: boolean} = {
     "!bot": false,
-    "!title": true,
     "!youtube": false,
     "!commands": false,
-    "!bot-uptime": false
+    "!bot-uptime": false,
+    "!title": true,
+    "!game": true,
 };
 
 const isValidCommand = (command: string): command is keyof typeof commandHandlers => {
