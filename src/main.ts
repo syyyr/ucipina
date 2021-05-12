@@ -33,7 +33,7 @@ const messageLogger = (_channel: string, userstate: tmi.ChatUserstate, message: 
         hour: "2-digit",
     });
     const origin = typeof userstate.username !== "string" ? "<unknown_user>" :
-        `${userstate.mod || userstate.username === "syyyr" ? "@" : ""}${userstate.username}`;
+        `${userstate.mod || userstate.badges?.broadcaster === "1" ? "@" : ""}${userstate.username}`;
     console.log(`${time} ${origin.padStart(15)}: ${message}`);
 };
 
