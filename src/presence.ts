@@ -25,7 +25,9 @@ export default (msgQueue: MessageQueue, options: {intervalFrom: number, interval
 
     const post = () => {
         log("Sending presence.");
-        msgQueue.push(`/me ${stash[Math.floor((stash.length * Math.random()))]}`);
+        msgQueue.push(`${stash[Math.floor((stash.length * Math.random()))]}`, {
+            cursive: true
+        });
         global.setTimeout(post, calcNext());
     };
 

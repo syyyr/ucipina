@@ -76,8 +76,9 @@ const youtubeInfoScraper = (msgQueue: MessageQueue, _channel: string, userstate:
             }
             const duration =
                 `${info.duration.hours ? info.duration.hours + "h " : ""}${info.duration.minutes ? info.duration.minutes + "m " : ""}${info.duration.seconds + "s"}`;
-            msgQueue.push(`/me  ▶️ YouTube ∎ ${info.title} ∎ ${info.uploader} ∎ ${duration} ∎ https://youtu.be/${info.id}`, {
-                color: Color.Red
+            msgQueue.push(`▶️ YouTube ∎ ${info.title} ∎ ${info.uploader} ∎ ${duration} ∎ https://youtu.be/${info.id}`, {
+                color: Color.Red,
+                cursive: true
             });
         });
     });

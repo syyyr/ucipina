@@ -1,5 +1,12 @@
 import tmi from "tmi.js"
 import ENV from "./env"
+
+type MessageOptions = {
+    color?: Color;
+    whom?: string;
+    cursive?: boolean
+};
+
 class MessageQueue {
     private queue: {
         message: string;
@@ -24,8 +31,11 @@ class MessageQueue {
         }, options.interval);
     }
 
-    push(message: string, options?: {color?: Color, whom?: string}): void {
-        let formattedMessage = (typeof options?.whom !== "undefined" ? "@" + options.whom + " " : "") + message;
+    push(message: string, options?: MessageOptions): void {
+        let formattedMessage =
+            (options?.cursive === true ? "/me " : "")
+            + (typeof options?.whom !== "undefined" ? "@" + options.whom + " " : "")
+            + message;
         this.queue.push({ message: formattedMessage, color: options?.color});
     }
 }
