@@ -11,8 +11,14 @@ const secondsInDay = 3600 * 24;
 const secondsInHour = 3600;
 const secondsInMinute = 60;
 
+type HandlerArgs = {
+    api: ApiClient,
+    who: string,
+    cmdArgs: string[]
+};
+
 const commandHandlers = {
-    "!commands": (msgQueue: MessageQueue, ) => {
+    "!commands": (msgQueue: MessageQueue) => {
         msgQueue.push(`Příkazy: ${Object.keys(commandHandlers).sort().join(" ")}`);
     },
     "!bot": (msgQueue: MessageQueue) => {
@@ -32,18 +38,18 @@ const commandHandlers = {
 
         msgQueue.push(`Už běžím ${days}d${hours}h${minutes}m${upTimeSec}s.`);
     },
-    "!title": (msgQueue: MessageQueue, args: string[], api: ApiClient) => {
-        const title = args.join(" ");
+    "!title": (msgQueue: MessageQueue, handlerArgs: HandlerArgs) => {
+        const title = handlerArgs.cmdArgs.join(" ");
         log(`Changing title to ${title}.`);
-        msgQueue.push(`Měním titulek na "${title}".`);
-        api.helix.users.getUserByName(ENV.CHANNEL_NAME).then((user) => {
+        handlerArgs.api.helix.users.getUserByName(ENV.CHANNEL_NAME).then((user) => {
             if (user === null) {
                 log("Couldn't change the title. (user === null)")
                 return;
             }
 
-            api.helix.channels.updateChannelInfo(user, { title }).then(() => {
+            handlerArgs.api.helix.channels.updateChannelInfo(user, { title }).then(() => {
                 log("Title changed.");
+                msgQueue.push(`@${handlerArgs.who} Hotovo.`);
             }).catch((reason) => {
                 log("Couldn't change the title:");
                 log(reason);
@@ -67,7 +73,7 @@ const isValidCommand = (command: string): command is keyof typeof commandHandler
 const exclCommand = (msgQueue: MessageQueue, _channel: string, userstate: tmi.ChatUserstate, api: ApiClient, message: string) => {
     if (message.charAt(0) === "!") {
         // Twitch handles double spaces, but let's be sure.
-        const [command, ...args] = message.replace("  ", " ").split(" ");
+        const [command, ...cmdArgs] = message.replace("  ", " ").split(" ");
 
         if (typeof userstate.username === "undefined") {
             log("Got a !command from a non-user.");
@@ -86,7 +92,7 @@ const exclCommand = (msgQueue: MessageQueue, _channel: string, userstate: tmi.Ch
         }
 
         log(`Executing "${command}".`);
-        commandHandlers[command](msgQueue, args, api);
+        commandHandlers[command](msgQueue, {cmdArgs, api, who: userstate.username});
     }
 };
 
