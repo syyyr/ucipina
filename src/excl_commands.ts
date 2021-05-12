@@ -91,7 +91,9 @@ const commandHandlers = {
 
                 handlerArgs.api.helix.channels.updateChannelInfo(user, { gameId: game.id }).then(() => {
                     log("Game changed.");
-                    msgQueue.push(`@${handlerArgs.who} Hotovo.`);
+                    msgQueue.push(`Hotovo.`, {
+                        whom: handlerArgs.who
+                    });
                 }).catch((reason) => {
                     log("Couldn't change the game.");
                     log(reason);
