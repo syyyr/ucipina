@@ -56,7 +56,9 @@ const commandHandlers = {
 
             handlerArgs.api.helix.channels.updateChannelInfo(user, { title }).then(() => {
                 log("Title changed.");
-                msgQueue.push(`@${handlerArgs.who} Hotovo.`);
+                msgQueue.push(`Hotovo.`, {
+                    whom: handlerArgs.who
+                });
             }).catch((reason) => {
                 log("Couldn't change the title:");
                 log(reason);
