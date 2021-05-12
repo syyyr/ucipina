@@ -61,6 +61,9 @@ const commandHandlers = {
                 log("Couldn't change the title:");
                 log(reason);
             });
+        }).catch((reason) => {
+            log("Couldn't get the stream user.");
+            log(reason);
         });
     },
 } as const;
