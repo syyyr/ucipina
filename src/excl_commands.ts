@@ -87,7 +87,7 @@ const exclCommand = (msgQueue: MessageQueue, _channel: string, userstate: tmi.Ch
 
         if (!isValidCommand(command)) {
             log(`Got unknown command "${command}".`);
-            msgQueue.push(`${userstate.username}: Sorry, ${command} ještě neumim. :<`);
+            msgQueue.push(`@${userstate.username} Sorry, ${command} ještě neumim. :<`);
             return;
         }
 
