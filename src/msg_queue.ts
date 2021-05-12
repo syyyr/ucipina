@@ -24,8 +24,9 @@ class MessageQueue {
         }, options.interval);
     }
 
-    push(message: string, color?: Color): void {
-        this.queue.push({message, color});
+    push(message: string, options?: {color?: Color, whom?: string}): void {
+        let formattedMessage = (typeof options?.whom !== "undefined" ? "@" + options.whom + " " : "") + message;
+        this.queue.push({ message: formattedMessage, color: options?.color});
     }
 }
 

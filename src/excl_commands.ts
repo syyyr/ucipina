@@ -1,7 +1,7 @@
 import tmi from "tmi.js"
 import { ApiClient } from 'twitch';
 import ENV from "./env"
-import MessageQueue from "./msg_queue";
+import MessageQueue, {Color} from "./msg_queue";
 import {log} from "./log"
 import wrapHandler from "./wrap_handler";
 
@@ -40,7 +40,9 @@ const commandHandlers = {
     },
     "!title": (msgQueue: MessageQueue, handlerArgs: HandlerArgs) => {
         if (handlerArgs.cmdArgs.length === 0) {
-            msgQueue.push(`@${handlerArgs.who} Na co to chceš změnit? (použití: !title <titulek>).`);
+            msgQueue.push(`Na co to chceš změnit? (použití: !title <titulek>).`, {
+                whom: handlerArgs.who
+            });
             return;
         }
 
@@ -87,7 +89,9 @@ const exclCommand = (msgQueue: MessageQueue, _channel: string, userstate: tmi.Ch
 
         if (!isValidCommand(command)) {
             log(`Got unknown command "${command}".`);
-            msgQueue.push(`@${userstate.username} Sorry, ${command} ještě neumim. :<`);
+            msgQueue.push(`Sorry, ${command} ještě neumim. :<`, {
+                whom: userstate.username
+            });
             return;
         }
 
