@@ -47,7 +47,7 @@ const commandHandlers = {
         }
 
         const title = handlerArgs.cmdArgs.join(" ");
-        log(`Changing title to ${title}.`);
+        log(`Changing title to "${title}".`);
         handlerArgs.api.helix.users.getUserByName(ENV.CHANNEL_NAME).then((user) => {
             if (user === null) {
                 log("Couldn't change the title. (user === null)")
@@ -85,6 +85,7 @@ const commandHandlers = {
                 return;
             }
 
+            log(`Changing game to "${game.name}".`);
             handlerArgs.api.helix.users.getUserByName(ENV.CHANNEL_NAME).then((user) => {
                 if (user === null) {
                     log("Couldn't change the game. (user === null)")
@@ -140,7 +141,7 @@ const exclCommand = (msgQueue: MessageQueue, user: string, message: string, info
             return;
         }
 
-        log(`Executing "${command}".`);
+        log(`Executing "${command} ${cmdArgs.join(" ")}".`);
         commandHandlers[command](msgQueue, {cmdArgs, api, who: user});
     }
 };
