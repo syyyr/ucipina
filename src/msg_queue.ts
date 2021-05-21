@@ -15,17 +15,17 @@ class MessageQueue {
 
     constructor(client: ChatClient, options: {interval: number, logger: (message: string) => void}) {
         this.queue = [];
-        global.setInterval(() => {
+        global.setInterval(async () => {
             const toSend = this.queue.shift();
             if (typeof toSend === "object") {
                 if (typeof toSend.color !== "undefined") {
-                    client.changeColor(toSend.color);
+                    await client.changeColor(toSend.color);
                 }
-                client.say(ENV.CHANNEL_NAME, toSend.message).catch((reason) => {
+                await client.say(ENV.CHANNEL_NAME, toSend.message).catch((reason) => {
                     console.log("Unable to send message:", reason);
                 });
                 if (typeof toSend.color !== "undefined") {
-                    client.changeColor(Color.HotPink);
+                    await client.changeColor(Color.HotPink);
                 }
 
                 options.logger(toSend.message);
