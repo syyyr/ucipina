@@ -1,7 +1,6 @@
 import tmi from "tmi.js"
-import { promises as fs } from "fs";
 import { ApiClient } from 'twitch';
-import { RefreshableAuthProvider, StaticAuthProvider } from 'twitch-auth';
+import { getStreamerAuth } from './auth';
 import ENV from "./env"
 import AHOJSender from "./AHOJ_sender"
 import ExclCommands from "./excl_commands"
@@ -46,29 +45,13 @@ const signalHandler = async (sig: NodeJS.Signals) => {
 };
 
 const main = async () => {
-    const tokenData = JSON.parse(await fs.readFile("./tokens.json", "utf-8"));
-    const auth = new RefreshableAuthProvider(
-        new StaticAuthProvider(ENV.CLIENT_ID, tokenData.accessToken, ["user:edit:broadcast"]), {
-            clientSecret: ENV.CLIENT_SECRET,
-            refreshToken: tokenData.refreshToken,
-            expiry: tokenData.expiryTimestamp === null ? null : new Date(tokenData.expiryTimestamp),
-            onRefresh: async ({ accessToken, refreshToken, expiryDate }) => {
-                const newTokenData = {
-                    accessToken,
-                    refreshToken,
-                    expiryTimestamp: expiryDate === null ? null : expiryDate.getTime()
-                };
-                await fs.writeFile('./tokens.json', JSON.stringify(newTokenData, null, 4), "utf-8")
-            }
-        }
-    );
-
-    const api = new ApiClient({ authProvider: auth });
+    const streamerAuth = await getStreamerAuth();
+    const streamerApi = new ApiClient({ authProvider: streamerAuth });
 
     client.on("message", messageLogger);
-    client.on("message", ExclCommands(msgQueue, api));
-    client.on("message", AHOJSender(msgQueue, api));
-    client.on("message", YoutubeScraper(msgQueue, api));
+    client.on("message", ExclCommands(msgQueue, streamerApi));
+    client.on("message", AHOJSender(msgQueue, streamerApi));
+    client.on("message", YoutubeScraper(msgQueue, streamerApi));
 
     client.on("disconnected", (reason) => {
         log(`Disconnected. Reason: ${reason}`);

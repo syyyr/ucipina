@@ -1,4 +1,4 @@
 build/
 node_modules/
 oauth_token.txt
-tokens.json
+streamer.json
