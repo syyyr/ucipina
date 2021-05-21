@@ -62,7 +62,7 @@ const yt = new Youtube();
 
 const youtubeInfoScraper = (msgQueue: MessageQueue, user: string, message: string, _info: PrivateMessage, _api: ApiClient) => {
     const handleScrapeError = (url: string) => {
-        msgQueue.push(`${user}: ${url} is not a valid YT url. qwq`);
+        msgQueue.push(`${user}: ${url} není validní YT url (nebo mě YT nenávidí qwq).`);
         return undefined;
     };
     const urls = yt.parseUrls(message);
