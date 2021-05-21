@@ -1,4 +1,4 @@
-import tmi from "tmi.js"
+import {PrivateMessage} from 'twitch-chat-client';
 import {ApiClient} from "twitch";
 import youtubedl from "youtube-dl"
 import MessageQueue, {Color} from "./msg_queue";
@@ -60,14 +60,14 @@ class Youtube {
 
 const yt = new Youtube();
 
-const youtubeInfoScraper = (msgQueue: MessageQueue, _channel: string, userstate: tmi.ChatUserstate, _api: ApiClient, message: string) => {
+const youtubeInfoScraper = (msgQueue: MessageQueue, user: string, message: string, _info: PrivateMessage, _api: ApiClient) => {
     const handleScrapeError = (url: string) => {
-        msgQueue.push(`${userstate.username}: ${url} is not a valid YT url. qwq`);
+        msgQueue.push(`${user}: ${url} is not a valid YT url. qwq`);
         return undefined;
     };
     const urls = yt.parseUrls(message);
     if (urls.length > 0) {
-        log(`Parsed ${urls.length} URLs from ${userstate.username}.`);
+        log(`Parsed ${urls.length} URLs from ${user}.`);
     }
     Promise.all(urls.map(yt.getInfo).map((prom) => prom.catch(handleScrapeError))).then((infos: (YTInfo | undefined)[]) => {
         infos.forEach((info: YTInfo | undefined) => {

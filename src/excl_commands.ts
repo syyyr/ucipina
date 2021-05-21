@@ -1,7 +1,7 @@
-import tmi from "tmi.js"
+import { PrivateMessage } from 'twitch-chat-client';
 import { ApiClient } from 'twitch';
 import ENV from "./env"
-import MessageQueue, {Color} from "./msg_queue";
+import MessageQueue from "./msg_queue";
 import {log} from "./log"
 import wrapHandler from "./wrap_handler";
 
@@ -122,31 +122,26 @@ const isValidCommand = (command: string): command is keyof typeof commandHandler
     return command in commandHandlers;
 };
 
-const exclCommand = (msgQueue: MessageQueue, _channel: string, userstate: tmi.ChatUserstate, api: ApiClient, message: string) => {
+const exclCommand = (msgQueue: MessageQueue, user: string, message: string, info: PrivateMessage, api: ApiClient) => {
     if (message.charAt(0) === "!") {
         // Twitch handles double spaces, but let's be sure.
         const [command, ...cmdArgs] = message.replace("  ", " ").split(" ");
 
-        if (typeof userstate.username === "undefined") {
-            log("Got a !command from a non-user.");
-            return;
-        }
-
         if (!isValidCommand(command)) {
             log(`Got unknown command "${command}".`);
             msgQueue.push(`Sorry, ${command} ještě neumim. :<`, {
-                whom: userstate.username
+                whom: user
             });
             return;
         }
 
-        if (modRequired[command] && !(userstate.mod === true || userstate.badges?.broadcaster === "1")) {
-            log(`Denied execution of "${command}" for "${userstate.username}".`);
+        if (modRequired[command] && !(info.userInfo.isMod || info.userInfo.isBroadcaster)) {
+            log(`Denied execution of "${command}" for "${user}".`);
             return;
         }
 
         log(`Executing "${command}".`);
-        commandHandlers[command](msgQueue, {cmdArgs, api, who: userstate.username});
+        commandHandlers[command](msgQueue, {cmdArgs, api, who: user});
     }
 };
 

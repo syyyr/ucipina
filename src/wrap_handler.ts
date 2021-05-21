@@ -1,15 +1,16 @@
-import tmi from "tmi.js"
 import { ApiClient } from 'twitch';
+import { PrivateMessage } from 'twitch-chat-client';
 import MessageQueue from "./msg_queue";
+import ENV from "./env"
 
 const wrapHandler =
-    (toWrap: (msgQueue: MessageQueue, channel: string, userstate: tmi.ChatUserstate, _api: ApiClient, message: string) => void) =>
+    (toWrap: (msgQueue: MessageQueue, user: string, message: string, info: PrivateMessage, api: ApiClient) => void) =>
     (msgQueue: MessageQueue, api: ApiClient) =>
-    (channel: string, userstate: tmi.ChatUserstate, message: string, self: boolean) => {
-        if (self) {
+    (_channel: string, user: string, message: string, info: PrivateMessage) => {
+        if (user === ENV.BOT_USERNAME) {
             return;
         }
-        toWrap(msgQueue, channel, userstate, api, message);
+        toWrap(msgQueue, user, message, info, api);
     };
 
 export default wrapHandler;

@@ -1,4 +1,4 @@
-import tmi from "tmi.js"
+import { ChatClient } from 'twitch-chat-client';
 import ENV from "./env"
 
 type MessageOptions = {
@@ -13,20 +13,22 @@ class MessageQueue {
         color?: Color
     }[];
 
-    constructor(client: tmi.Client, options: {interval: number}) {
+    constructor(client: ChatClient, options: {interval: number, logger: (message: string) => void}) {
         this.queue = [];
         global.setInterval(() => {
             const toSend = this.queue.shift();
             if (typeof toSend === "object") {
                 if (typeof toSend.color !== "undefined") {
-                    client.color(toSend.color);
+                    client.changeColor(toSend.color);
                 }
                 client.say(ENV.CHANNEL_NAME, toSend.message).catch((reason) => {
                     console.log("Unable to send message:", reason);
                 });
                 if (typeof toSend.color !== "undefined") {
-                    client.color(Color.HotPink);
+                    client.changeColor(Color.HotPink);
                 }
+
+                options.logger(toSend.message);
             }
         }, options.interval);
     }

@@ -22,5 +22,6 @@ const impl = async (tokenFile: string, scopes: string[]) => {
 };
 
 const getStreamerAuth = async () => impl("./streamer.json", ["user:edit:broadcast"]);
+const getChatAuth = async () => impl("./chat.json", ["chat:read", "chat:edit"]);
 
-export { getStreamerAuth };
+export { getStreamerAuth, getChatAuth };

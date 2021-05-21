@@ -1,4 +1,5 @@
 build/
 node_modules/
 oauth_token.txt
+chat.json
 streamer.json
