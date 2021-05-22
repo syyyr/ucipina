@@ -11,6 +11,7 @@ class MessageQueue {
     private queue: {
         message: string;
         color?: Color
+        cursive?: boolean
     }[];
 
     constructor(client: ChatClient, options: {interval: number, logger: (message: string) => void}) {
@@ -21,24 +22,29 @@ class MessageQueue {
                 if (typeof toSend.color !== "undefined") {
                     await client.changeColor(toSend.color);
                 }
-                await client.say(ENV.CHANNEL_NAME, toSend.message).catch((reason) => {
+
+                const ret = toSend.cursive === true ?
+                    client.action(ENV.CHANNEL_NAME, toSend.message) :
+                    client.say(ENV.CHANNEL_NAME, toSend.message);
+
+                await ret.catch((reason) => {
                     console.log("Unable to send message:", reason);
                 });
+
                 if (typeof toSend.color !== "undefined") {
                     await client.changeColor(Color.HotPink);
                 }
 
-                options.logger(toSend.message);
+                options.logger(`${toSend.cursive === true ? "/me " : ""}${toSend.message}`);
             }
         }, options.interval);
     }
 
     push(message: string, options?: MessageOptions): void {
         let formattedMessage =
-            (options?.cursive === true ? "/me " : "")
-            + (typeof options?.whom !== "undefined" ? "@" + options.whom + " " : "")
+            (typeof options?.whom !== "undefined" ? "@" + options.whom + " " : "")
             + message;
-        this.queue.push({ message: formattedMessage, color: options?.color});
+        this.queue.push({ message: formattedMessage, color: options?.color, cursive: options?.cursive});
     }
 }
 
