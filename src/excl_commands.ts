@@ -154,7 +154,7 @@ const exclCommand = (msgQueue: MessageQueue, user: string, message: string, info
             return;
         }
 
-        log(`Executing "${command} ${cmdArgs.join(" ")}".`);
+        log(`Executing "${command}${cmdArgs.length !== 0 ? " " : ""}${cmdArgs.join(" ")}".`);
         commandHandlers[command](msgQueue, {cmdArgs, api, who: user});
     }
 };
