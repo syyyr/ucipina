@@ -143,7 +143,7 @@ const exclCommand = (msgQueue: MessageQueue, user: string, message: string, info
 
         if (!isValidCommand(command)) {
             log(`Got unknown command "${command}".`);
-            msgQueue.push(`Sorry, ${command} ještě neumim. :<`, {
+            msgQueue.push(`Sorry, ${command} ještě neumim. :< V !commands jsou všechny podporovaný commandy.`, {
                 whom: user
             });
             return;
