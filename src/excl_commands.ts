@@ -107,6 +107,18 @@ const commandHandlers = {
             });
 
         });
+    },
+    "!time": (msgQueue: MessageQueue, _handlerArgs: HandlerArgs) => {
+        msgQueue.push(new Date().toLocaleString("cs-CZ", {
+            day: "numeric",
+            month: "long",
+            weekday: "long",
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+        }), {
+            cursive: true
+        });
     }
 } as const;
 
@@ -117,6 +129,7 @@ const modRequired: {[key in keyof typeof commandHandlers]: boolean} = {
     "!bot-uptime": false,
     "!title": true,
     "!game": true,
+    "!time": false,
 };
 
 const isValidCommand = (command: string): command is keyof typeof commandHandlers => {
